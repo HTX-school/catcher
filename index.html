@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <title>Socket io client</title>
+        <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io("http://localhost:5000");
+            // use your socket
+            socket.on("welcome", (message) => {
+                // do something with the message.
+            })
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
