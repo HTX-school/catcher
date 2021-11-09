@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const server = require('http').createServer()
 const io = require('socket.io')(server, {
     cors: {
@@ -6,13 +8,14 @@ const io = require('socket.io')(server, {
     }
 })
 
-const port = 5000
+const hostname = process.env.HOSTNAME || 'localhost'
+const port = process.env.PORT || 5000
 
 io.on('connect', socket => {
     console.log(`Client connected. There's now ${io.engine.clientsCount} online.`);
 
     socket.on('position', pos => {
-        // console.log(`${socket.id}:`, pos)
+        console.log(`${socket.id}:`, pos)
     })
 
     socket.on('disconnect', () => {
@@ -20,4 +23,4 @@ io.on('connect', socket => {
     })
 })
 
-server.listen(port, () => console.log(`Server listening on *:${port}`))
+server.listen(port, hostname, () => console.log(`Server listening on *:${port}`))
