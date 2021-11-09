@@ -11,4 +11,6 @@ RUN npm install --production
 
 COPY . .
 
+EXPOSE ${PORT}
+
 CMD [ "npm", "start"]
