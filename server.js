@@ -24,6 +24,7 @@ io.on('connect', socket => {
     console.log(`Client connected. There's now ${io.engine.clientsCount} online.`);
 
     socket.emit('join', { player_id: socket.id, server_settings })
+    socket.emit('player-count', io.engine.clientsCount)
 
     socket.on('name_change', new_name => {
         players[socket.id] = {
@@ -66,7 +67,8 @@ io.on('connect', socket => {
     socket.on('disconnect', () => {
         delete players[socket.id]
         console.log(`Client disconnected. There's now ${io.engine.clientsCount} online.`);
+        socket.emit('player-count', io.engine.clientsCount)
     })
 })
 
-server.listen(port, hostname, () => console.log(`Server listening on ${hostname}:${port}`))
+server.listen(port, hostname, () => console.log(`Socker.io is listening on ${hostname}:${port}`))
