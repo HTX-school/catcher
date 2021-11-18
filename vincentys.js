@@ -1,3 +1,4 @@
+// https://www.jameslmilner.com/post/measuring-the-world-with-javascript/
 function inverseVincentyDistance(lat1, lng1, lat2, lng2)
 {
     const toRadians = (latOrLng) => (latOrLng * Math.PI) / 180;
