@@ -23,14 +23,28 @@ let players = {}
 io.on('connect', socket => {
     console.log(`Client connected. There's now ${io.engine.clientsCount} online.`);
 
+    players[socket.id] = {
+        name: socket.id,
+        pos: undefined
+    }
+
     socket.emit('join', { player_id: socket.id, server_settings })
-    socket.emit('player-count', io.engine.clientsCount)
+    io.emit('player-count', io.engine.clientsCount)
 
     socket.on('name_change', new_name => {
         players[socket.id] = {
             ...players[socket.id],
             name: new_name
         }
+    })
+
+    socket.on('chat.message.send', message => {
+        mesObj = {
+            sender: players[socket.id].name,
+            message: message
+        }
+        console.log(mesObj)
+        io.emit('chat.message.received', mesObj)
     })
 
     socket.on('position', pos => {
@@ -46,10 +60,10 @@ io.on('connect', socket => {
 
         for (const [key, value] of Object.entries(players))
         {
-            if (key == socket.id) continue;
+            if (key == socket.id || value.pos == undefined) continue;
 
             let dist = vin(pos.latitude, pos.longitude, value.position.latitude, value.position.longitude)
-            let name = value.name ?? key
+            let name = value.name
             if (dist <= server_settings.short_distance)
             {
                 close_player_list.push(name)
@@ -67,7 +81,7 @@ io.on('connect', socket => {
     socket.on('disconnect', () => {
         delete players[socket.id]
         console.log(`Client disconnected. There's now ${io.engine.clientsCount} online.`);
-        socket.emit('player-count', io.engine.clientsCount)
+        io.emit('player-count', io.engine.clientsCount)
     })
 })
 
