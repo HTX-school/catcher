@@ -13,9 +13,9 @@ const io = require('socket.io')(server, {
 const hostname = process.env.HOSTNAME || '0.0.0.0'
 const port = process.env.PORT || 5000
 
-let server_settings = {
-    long_distance: 100,
-    short_distance: 3
+let settings = { 
+    max_distance: 100,
+    min_distance: 5
 }
 
 let players = {}
@@ -28,7 +28,7 @@ io.on('connect', socket => {
         pos: undefined
     }
 
-    socket.emit('join', { player_id: socket.id, server_settings })
+    socket.emit('join', { player_id: socket.id, settings })
     io.emit('player-count', io.engine.clientsCount)
 
     socket.on('name_change', new_name => {
@@ -52,11 +52,8 @@ io.on('connect', socket => {
             ...players[socket.id],
             position: pos,
         }
-        // Within short dist
-        close_player_list = []
 
-        // Within long dist
-        near_player_list = []
+        let distance_list = {}
 
         for (const [key, value] of Object.entries(players))
         {
@@ -64,18 +61,13 @@ io.on('connect', socket => {
 
             let dist = vin(pos.latitude, pos.longitude, value.position.latitude, value.position.longitude)
             let name = value.name
-            if (dist <= server_settings.short_distance)
-            {
-                close_player_list.push(name)
-            }
-            else if (dist <= server_settings.long_distance)
-            {
-                near_player_list.push(name)
-            }
+
+            console.log(key)
+            if (dist > settings.max_distance || dist < settings.min_distance) continue;
+            distance_list[name] = dist
         }
 
-        io.to(socket.id).emit('near_player', near_player_list)
-        io.to(socket.id).emit('close_player', close_player_list)
+        socket.emit('player_distances', distance_list)
     })
 
     socket.on('disconnect', () => {
