@@ -15,7 +15,7 @@ const port = process.env.PORT || 5000
 
 let settings = { 
     max_distance: 100,
-    min_distance: 5
+    min_distance: 0
 }
 
 let players = {}
@@ -25,11 +25,11 @@ io.on('connect', socket => {
 
     players[socket.id] = {
         name: socket.id,
-        pos: undefined
+        position: undefined
     }
 
     socket.emit('join', { player_id: socket.id, settings })
-    io.emit('player-count', io.engine.clientsCount)
+    io.emit('players.count', io.engine.clientsCount)
 
     socket.on('name_change', new_name => {
         players[socket.id] = {
@@ -54,26 +54,25 @@ io.on('connect', socket => {
         }
 
         let distance_list = {}
-
+        
         for (const [key, value] of Object.entries(players))
         {
-            if (key == socket.id || value.pos == undefined) continue;
-
-            let dist = vin(pos.latitude, pos.longitude, value.position.latitude, value.position.longitude)
+            if (key == socket.id || value.position == undefined) continue;
             let name = value.name
 
-            console.log(key)
+            let dist = vin(pos.latitude, pos.longitude, value.position.latitude, value.position.longitude)
+
             if (dist > settings.max_distance || dist < settings.min_distance) continue;
             distance_list[name] = dist
         }
 
-        socket.emit('player_distances', distance_list)
+        socket.emit('players.distance', distance_list)
     })
 
     socket.on('disconnect', () => {
         delete players[socket.id]
         console.log(`Client disconnected. There's now ${io.engine.clientsCount} online.`);
-        io.emit('player-count', io.engine.clientsCount)
+        io.emit('players.count', io.engine.clientsCount)
     })
 })
 
