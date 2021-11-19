@@ -13,9 +13,12 @@ const io = require('socket.io')(server, {
 const hostname = process.env.HOSTNAME || '0.0.0.0'
 const port = process.env.PORT || 5000
 
+let max_dist = process.env.MAX_DISTANCE || 100
+let min_dist = process.env.MIN_DISTANCE || 0
+
 let settings = { 
-    max_distance: 100,
-    min_distance: 0
+    max_distance: max_dist,
+    min_distance: min_dist
 }
 
 let players = {}
@@ -62,8 +65,10 @@ io.on('connect', socket => {
 
             let dist = vin(pos.latitude, pos.longitude, value.position.latitude, value.position.longitude)
 
-            if (dist > settings.max_distance || dist < settings.min_distance) continue;
-            distance_list[name] = dist
+            if (dist < settings.max_distance || dist > settings.min_distance) 
+            {
+                distance_list[name] = dist
+            }
         }
 
         socket.emit('players.distance', distance_list)
