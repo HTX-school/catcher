@@ -31,7 +31,7 @@ io.on('connect', socket => {
     socket.emit('join', { player_id: socket.id, settings })
     io.emit('players.count', io.engine.clientsCount)
 
-    socket.on('name_change', new_name => {
+    socket.on('player.name.change', new_name => {
         players[socket.id] = {
             ...players[socket.id],
             name: new_name
