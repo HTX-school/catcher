@@ -81,4 +81,4 @@ io.on('connect', socket => {
     })
 })
 
-server.listen(port, hostname, () => console.log(`Socker.io is listening on ${hostname}:${port}`))
+server.listen(port, hostname, () => console.log(`Socket.io is listening on ${hostname}:${port}`))
