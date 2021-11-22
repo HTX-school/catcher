@@ -56,7 +56,7 @@ io.on('connect', socket => {
             position: pos,
         }
 
-        let distance_list = {}
+        let distance_list = []
         
         for (const [key, value] of Object.entries(players))
         {
@@ -65,9 +65,9 @@ io.on('connect', socket => {
 
             let dist = vin(pos.latitude, pos.longitude, value.position.latitude, value.position.longitude)
 
-            if (dist < settings.max_distance || dist > settings.min_distance) 
+            if (dist >= min_dist || dist <= max_dist) 
             {
-                distance_list[name] = dist
+                distance_list.push({name, distance: dist})
             }
         }
 
