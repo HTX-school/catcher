@@ -24,7 +24,7 @@ let settings = {
 let players = {}
 
 io.on('connect', socket => {
-    console.log(`Client connected. There's now ${io.engine.clientsCount} online.`);
+    console.log(`Client connected (${io.engine.clientsCount} online)`);
 
     players[socket.id] = {
         name: socket.id,
@@ -76,7 +76,7 @@ io.on('connect', socket => {
 
     socket.on('disconnect', () => {
         delete players[socket.id]
-        console.log(`Client disconnected. There's now ${io.engine.clientsCount} online.`);
+        console.log(`Client disconnected (${io.engine.clientsCount} online)`);
         io.emit('players.count', io.engine.clientsCount)
     })
 })
